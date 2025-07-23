@@ -133,6 +133,7 @@ and I would have squashed into a single commit the readme.md updates.
 10. add trivy scan for vulnerabilities on the libraries at push
 11. make a maven profile for dev and one for test
 12. add sonar scan for code quality at push
+13. I would have added a util package where I will keep all my constants, I didn't had any constants in my case.
 
 ### 7. Postman collection
 
