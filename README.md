@@ -32,8 +32,8 @@ This project implements a simple store management system with products, shopping
 ### 2. Clone the repository
 
    ```bash
-   git clone https://your-repo-url.git
-   cd your-project-directory
+   git clone https://github.com/rmesescu/store-management.git
+   cd store-management/
    ```
 
 ### 3. Users and Authentication
