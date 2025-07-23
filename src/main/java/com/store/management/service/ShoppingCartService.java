@@ -29,7 +29,7 @@ public class ShoppingCartService {
 
     public ShoppingCartDTO getCartByCustomerId(Long customerId) {
         Customer customer = customerRepo.findById(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found", HttpStatus.NOT_FOUND));
 
         ShoppingCart cart = getShoppingCart(customer);
 
@@ -40,10 +40,10 @@ public class ShoppingCartService {
         if (quantity <= 0) throw new CartInventoryException("Quantity must be positive", HttpStatus.BAD_REQUEST);
 
         Customer customer = customerRepo.findById(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found", HttpStatus.NOT_FOUND));
 
         Product product = productRepo.findById(productId)
-                .orElseThrow(() ->new ProductNotFoundException("Product not found", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() ->new ProductNotFoundException("Product not found", HttpStatus.NOT_FOUND));
 
         ShoppingCart cart = getShoppingCart(customer);
 
@@ -59,11 +59,11 @@ public class ShoppingCartService {
 
     public ShoppingCartDTO removeProductFromCart(Long customerId, Long productId) {
         Customer customer = customerRepo.findById(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found", HttpStatus.NOT_FOUND));
 
         ShoppingCart cart = customer.getShoppingCart();
         if (cart == null) {
-            throw new CartInventoryException("Shopping cart not found", HttpStatus.BAD_REQUEST);
+            throw new CartInventoryException("Shopping cart not found", HttpStatus.NOT_FOUND);
         }
 
         ShoppingCartItem itemToRemove = cart.getItems().stream()
@@ -80,7 +80,7 @@ public class ShoppingCartService {
 
     public ShoppingCartDTO clearCart(Long customerId) {
         Customer customer = customerRepo.findById(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found", HttpStatus.NOT_FOUND));
 
         ShoppingCart cart = customer.getShoppingCart();
         if (cart == null) return null;

@@ -61,13 +61,13 @@ public class ProductService {
 
                     Product updated = productRepository.save(existingProduct);
                     return productMapper.productToProductDTO(updated);
-                }).orElseThrow(() -> new ProductNotFoundException("Product not found ", HttpStatus.BAD_REQUEST));
+                }).orElseThrow(() -> new ProductNotFoundException("Product not found ", HttpStatus.NOT_FOUND));
     }
 
     // 6. Delete a product by id
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new ProductNotFoundException("Product not found", HttpStatus.BAD_REQUEST);
+            throw new ProductNotFoundException("Product not found", HttpStatus.NOT_FOUND);
         }
         productRepository.deleteById(id);
     }

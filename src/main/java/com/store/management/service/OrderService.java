@@ -29,7 +29,7 @@ public class OrderService {
 
     public OrderDTO placeOrder(Long customerId) {
         Customer customer = customerRepo.findById(customerId)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found", HttpStatus.NOT_FOUND));
 
         ShoppingCart cart = customer.getShoppingCart();
         if (cart == null || cart.getItems().isEmpty()) {
@@ -47,7 +47,7 @@ public class OrderService {
 
     public OrderDTO getOrder(Long orderId) {
         OrderEntity orderEntity = orderRepo.findById(orderId)
-                .orElseThrow(() -> new BadOrderException("Order not found", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new BadOrderException("Order not found", HttpStatus.NOT_FOUND));
 
         return orderMapper.toDTO(orderEntity);
     }
