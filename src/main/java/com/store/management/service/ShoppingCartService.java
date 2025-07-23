@@ -31,10 +31,7 @@ public class ShoppingCartService {
         Customer customer = customerRepo.findById(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer not found", HttpStatus.BAD_REQUEST));
 
-        ShoppingCart cart = customer.getShoppingCart();
-        if (cart == null) {
-            cart = createCartForCustomer(customer);
-        }
+        ShoppingCart cart = getShoppingCart(customer);
 
         return cartMapper.toDTO(cart);
     }
@@ -48,27 +45,13 @@ public class ShoppingCartService {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() ->new ProductNotFoundException("Product not found", HttpStatus.BAD_REQUEST));
 
-        ShoppingCart cart = customer.getShoppingCart();
-        if (cart == null) {
-            cart = createCartForCustomer(customer);
-        }
+        ShoppingCart cart = getShoppingCart(customer);
 
         Optional<ShoppingCartItem> existingItemOpt = cart.getItems().stream()
                 .filter(item -> item.getProduct().getProductId().equals(productId))
                 .findFirst();
 
-        if (existingItemOpt.isPresent()) {
-            ShoppingCartItem existingItem = existingItemOpt.get();
-            existingItem.setQuantity(existingItem.getQuantity() + quantity);
-            cartItemRepo.save(existingItem);
-        } else {
-            ShoppingCartItem newItem = new ShoppingCartItem();
-            newItem.setCart(cart);
-            newItem.setProduct(product);
-            newItem.setQuantity(quantity);
-            cart.getItems().add(newItem);
-            cartItemRepo.save(newItem);
-        }
+        addItemToCard(quantity, existingItemOpt, cart, product);
 
         shoppingCartRepository.save(cart);
         return cartMapper.toDTO(cart);
@@ -110,6 +93,14 @@ public class ShoppingCartService {
         return cartMapper.toDTO(cart);
     }
 
+    private ShoppingCart getShoppingCart(Customer customer) {
+        ShoppingCart cart = customer.getShoppingCart();
+        if (cart == null) {
+            cart = createCartForCustomer(customer);
+        }
+        return cart;
+    }
+
     private ShoppingCart createCartForCustomer(Customer customer) {
         ShoppingCart newCart = new ShoppingCart();
         newCart.setCustomer(customer);
@@ -117,5 +108,20 @@ public class ShoppingCartService {
         customer.setShoppingCart(newCart);
         customerRepo.save(customer);
         return newCart;
+    }
+
+    private void addItemToCard(int quantity, Optional<ShoppingCartItem> existingItemOpt, ShoppingCart cart, Product product) {
+        if (existingItemOpt.isPresent()) {
+            ShoppingCartItem existingItem = existingItemOpt.get();
+            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            cartItemRepo.save(existingItem);
+        } else {
+            ShoppingCartItem newItem = new ShoppingCartItem();
+            newItem.setCart(cart);
+            newItem.setProduct(product);
+            newItem.setQuantity(quantity);
+            cart.getItems().add(newItem);
+            cartItemRepo.save(newItem);
+        }
     }
 }

@@ -36,29 +36,7 @@ public class OrderService {
             throw new CartInventoryException("Shopping cart is empty", HttpStatus.BAD_REQUEST);
         }
 
-        OrderEntity orderEntity = new OrderEntity();
-        orderEntity.setCustomer(customer);
-        orderEntity.setPlacedAt(LocalDateTime.now());
-
-        List<OrderItem> orderItems = new ArrayList<>();
-
-        for (ShoppingCartItem cartItem : cart.getItems()) {
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrderEntity(orderEntity);
-            orderItem.setProduct(cartItem.getProduct());
-            orderItem.setQuantity(cartItem.getQuantity());
-
-            Product product = cartItem.getProduct();
-            int newStock = product.getStockQuantity() - cartItem.getQuantity();
-            if (newStock < 0) {
-                throw new CartInventoryException("Not enough stock for product: " + product.getProductName(), HttpStatus.BAD_REQUEST);
-            }
-            product.setStockQuantity(newStock);
-            orderItems.add(orderItem);
-        }
-
-        orderEntity.setItems(orderItems);
-        orderRepo.save(orderEntity);
+        OrderEntity orderEntity = createOrder(customer, cart);
 
         cartItemRepo.deleteAll(cart.getItems());
         cart.getItems().clear();
@@ -72,6 +50,41 @@ public class OrderService {
                 .orElseThrow(() -> new BadOrderException("Order not found", HttpStatus.BAD_REQUEST));
 
         return orderMapper.toDTO(orderEntity);
+    }
+
+    private OrderEntity createOrder(Customer customer, ShoppingCart cart) {
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setCustomer(customer);
+        orderEntity.setPlacedAt(LocalDateTime.now());
+
+        List<OrderItem> orderItems = new ArrayList<>();
+
+        addItemsToOrder(cart, orderEntity, orderItems);
+
+        orderEntity.setItems(orderItems);
+        orderRepo.save(orderEntity);
+        return orderEntity;
+    }
+
+    private static void addItemsToOrder(ShoppingCart cart, OrderEntity orderEntity, List<OrderItem> orderItems) {
+        for (ShoppingCartItem cartItem : cart.getItems()) {
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrderEntity(orderEntity);
+            orderItem.setProduct(cartItem.getProduct());
+            orderItem.setQuantity(cartItem.getQuantity());
+
+            removeQuantityFromProductStock(cartItem);
+            orderItems.add(orderItem);
+        }
+    }
+
+    private static void removeQuantityFromProductStock(ShoppingCartItem cartItem) {
+        Product product = cartItem.getProduct();
+        int newStock = product.getStockQuantity() - cartItem.getQuantity();
+        if (newStock < 0) {
+            throw new CartInventoryException("Not enough stock for product: " + product.getProductName(), HttpStatus.BAD_REQUEST);
+        }
+        product.setStockQuantity(newStock);
     }
 }
 
