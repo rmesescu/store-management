@@ -86,7 +86,7 @@ This application uses **basic HTTP authentication** with two in-memory users con
     - Enter **Username** and **Password** based on the users:
 
       | Username | Password  |
-           | -------- | --------- |
+      | -------- | --------- |
       | admin    | admin123  |
       | user     | user123   |
 
@@ -128,6 +128,8 @@ have a client which does the CRUD operations on AWS Cognito endpoints.
 framework which you wanted to be tested in this excersise. I am assuming that some connection tables are not necessary,
 and that hibernate has a way of doing them automatically, due to considerations of time I will submit this option.
 8. have explicit error codes for OAT
+9. I would have made a different branch, for each the initial commit and also a branch for the updates of the readme.md,
+and I would have squashed into a single commit the readme.md updates.
 
 ### 7. Postman collection
 
