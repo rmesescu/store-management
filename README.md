@@ -130,6 +130,9 @@ and that hibernate has a way of doing them automatically, due to considerations 
 8. have explicit error codes for OAT
 9. I would have made a different branch, for each the initial commit and also a branch for the updates of the readme.md,
 and I would have squashed into a single commit the readme.md updates.
+10. add trivy scan for vulnerabilities on the libraries at push
+11. make a maven profile for dev and one for test
+12. add sonar scan for code quality at push
 
 ### 7. Postman collection
 
