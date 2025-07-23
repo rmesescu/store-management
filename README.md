@@ -17,6 +17,8 @@ This project implements a simple store management system with products, shopping
     - [Shopping Cart](#shopping-cart-endpoints-shopping-cart)
     - [Orders](#order-endpoints-orders)
 - [5. Testing with Postman](#5-testing-with-postman)
+- [6. Other things I would have done](#6-other-things-i-would-have-done)
+- [6. Postman collection](#7-postman-collection)
 
 ---
 
@@ -114,12 +116,209 @@ Make sure to test each endpoint with proper credentials to verify role-based acc
 
 1. add swagger
 2. generate controllers with open api
-3. definitely not have securityConfig done like this
-4. add unit tests for the remaining classes
-5. add integration tests
-6. add more explicit logs for the steps that need to be captured,
+3. add unit tests for the remaining classes
+4. add integration tests
+5. add more explicit logs for the steps that need to be captured,
 by something like Kibana watchers, for examples: order initiated, order successful, order failed
-7. For the scope of this homework and for time considerations, security was done like this, 
+6. for the scope of this homework and for time considerations, security was done like this, 
 even if this is definitely not the correct way of doing the user management part. As an example: I would use
 Cognito from AWS, to store the passwords, emails and username or any other sensitive information, and will
 have a client which does the CRUD operations on AWS Cognito endpoints.
+7. for the scope of project I used hibernate, I haven't worked with it in 5 years, but I am guessing that this was the 
+framework which you wanted to be tested in this excersise. I am assuming that some connection tables are not necessary,
+and that hibernate has a way of doing them automatically, due to considerations of time I will submit this option.
+8. have explicit error codes for OAT
+
+### 7. Postman collection
+
+   ```bash
+   {
+  "info": {
+    "name": "Store Management API - Full",
+    "_postman_id": "store-management-collection-full",
+    "description": "Full collection with all secured Store Management endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get All Products (ADMIN or USER)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "user" }, { "key": "password", "value": "user123" }] }
+          }
+        },
+        {
+          "name": "Search Products by Name (ADMIN or USER)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/products/search/name?name=IPHONE",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "search", "name"],
+              "query": [{ "key": "name", "value": "IPHONE" }]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "user" }, { "key": "password", "value": "user123" }] }
+          }
+        },
+        {
+          "name": "Search Products by Category (ADMIN or USER)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/products/search/category?category=ELECTRONICS",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "search", "category"],
+              "query": [{ "key": "category", "value": "ELECTRONICS" }]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "user" }, { "key": "password", "value": "user123" }] }
+          }
+        },
+        {
+          "name": "Create Product (ADMIN only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"productName\":\"NEW PRODUCT\",\"category\":\"ELECTRONICS\",\"subcategory\":\"GADGETS\",\"productType\":\"PHONE\",\"price\":499.99,\"stockQuantity\":10}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "admin" }, { "key": "password", "value": "admin123" }] }
+          }
+        },
+        {
+          "name": "Update Product (ADMIN only)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"productName\":\"UPDATED PRODUCT\",\"category\":\"ELECTRONICS\",\"subcategory\":\"GADGETS\",\"productType\":\"PHONE\",\"price\":599.99,\"stockQuantity\":20}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/products/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "1"]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "admin" }, { "key": "password", "value": "admin123" }] }
+          }
+        },
+        {
+          "name": "Delete Product (ADMIN only)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/products/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["products", "1"]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "admin" }, { "key": "password", "value": "admin123" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shopping Cart",
+      "item": [
+        {
+          "name": "Get Cart (ADMIN or USER)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/shopping-cart/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["shopping-cart", "1"]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "user" }, { "key": "password", "value": "user123" }] }
+          }
+        },
+        {
+          "name": "Add To Cart (ADMIN or USER)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/shopping-cart/1/add/2?quantity=3",
+              "host": ["{{baseUrl}}"],
+              "path": ["shopping-cart", "1", "add", "2"],
+              "query": [{ "key": "quantity", "value": "3" }]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "user" }, { "key": "password", "value": "user123" }] }
+          }
+        },
+        {
+          "name": "Remove From Cart (ADMIN or USER)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/shopping-cart/1/remove/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["shopping-cart", "1", "remove", "2"]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "user" }, { "key": "password", "value": "user123" }] }
+          }
+        },
+        {
+          "name": "Clear Cart (ADMIN or USER)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/shopping-cart/1/clear",
+              "host": ["{{baseUrl}}"],
+              "path": ["shopping-cart", "1", "clear"]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "user" }, { "key": "password", "value": "user123" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Place Order (ADMIN or USER)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/orders/1/place",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "1", "place"]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "user" }, { "key": "password", "value": "user123" }] }
+          }
+        },
+        {
+          "name": "Get Order By ID (ADMIN or USER)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/orders/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "1"]
+            },
+            "auth": { "type": "basic", "basic": [{ "key": "username", "value": "user" }, { "key": "password", "value": "user123" }] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ]
+}
+   ```
